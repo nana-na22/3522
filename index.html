@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3522 Confessions</title>
     <style>
-        /* Handwriting-style font for the introduction */
         @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
 
         body {
@@ -16,7 +15,6 @@
             height: 100vh;
         }
 
-        /* Sidebar styling */
         aside {
             width: 33%;
             background-color: #ffe6d5;
@@ -31,33 +29,6 @@
             transform: translateX(-100%);
         }
 
-        aside h2 {
-            font-size: 1.8em;
-            color: #f7b18c;
-            text-align: center;
-        }
-
-        aside ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        aside ul li {
-            margin-bottom: 15px;
-        }
-
-        aside ul li a {
-            text-decoration: none;
-            color: #e85d04;
-            font-weight: bold;
-        }
-
-        aside ul li a:hover {
-            color: #ff6f61;
-            text-decoration: underline;
-        }
-
-        /* Sidebar toggle button */
         .toggle-sidebar {
             position: absolute;
             top: 20px;
@@ -76,7 +47,6 @@
             background-color: #5a3321;
         }
 
-        /* Main content area */
         main {
             flex: 1;
             padding: 20px;
@@ -88,7 +58,6 @@
         }
 
         main.expanded {
-            flex: none;
             width: 100%;
         }
 
@@ -109,11 +78,6 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .intro b {
-            font-size: 1.8em;
-            color: #ee5209;
         }
 
         #confession-form {
@@ -171,16 +135,34 @@
             font-size: 1.5em;
         }
 
-        .emojis span {
-            cursor: pointer;
-            margin-right: 10px;
-            font-size: 1.2em;
+        .comments p {
+            margin: 5px 0;
+            font-size: 1em;
             color: #333;
+            background-color: #f6e7e0;
+            padding: 5px;
+            border-radius: 5px;
         }
 
-        .emojis span:hover {
-            transform: scale(1.2);
-            transition: transform 0.2s;
+        .comment-form {
+            margin-top: 10px;
+        }
+
+        .comment-form input {
+            width: calc(100% - 80px);
+            margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #f2bfb5;
+            border-radius: 5px;
+        }
+
+        .comment-form button {
+            padding: 10px;
+            color: white;
+            background-color: #ff6f61;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -214,34 +196,64 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
-        const supabaseUrl = "https://dsrrjasoddkdaqeostvd.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcnJqYXNvZGRrZGFxZW9zdHZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxNzYwNDEsImV4cCI6MjA1MTc1MjA0MX0.Sevb5RZv8WG6il7G-pxIdGrJ_-xWy6CawO4tP5npY1g";
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const supabase = supabase.createClient(
+            "https://dsrrjasoddkdaqeostvd.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcnJqYXNvZGRrZGFxZW9zdHZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxNzYwNDEsImV4cCI6MjA1MTc1MjA0MX0.Sevb5RZv8WG6il7G-pxIdGrJ_-xWy6CawO4tP5npY1g"
+        );
 
-        // Fetch and display confessions
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const mainContent = document.getElementById("main-content");
+            sidebar.classList.toggle("collapsed");
+            mainContent.classList.toggle("expanded");
+        }
+
         async function fetchConfessions() {
             const { data: confessions, error } = await supabase.from("confessions").select("*").order("created_at", { ascending: false });
             if (error) console.error("Error fetching confessions:", error);
             return confessions || [];
         }
 
+        async function fetchComments(confessionId) {
+            const { data: comments, error } = await supabase.from("comments").select("*").eq("confession_id", confessionId).order("created_at", { ascending: true });
+            if (error) console.error(`Error fetching comments for confession ${confessionId}:`, error);
+            return comments || [];
+        }
+
         async function renderConfessions() {
             const confessions = await fetchConfessions();
             const container = document.getElementById("confessions");
             container.innerHTML = "";
-            confessions.forEach((conf) => {
+            for (const conf of confessions) {
                 const div = document.createElement("div");
                 div.className = "confession";
-                div.innerHTML = `<h3>${conf.nickname}</h3><p>${conf.confession}</p>`;
+                div.innerHTML = `
+                    <h3>${conf.nickname}</h3>
+                    <p>${conf.confession}</p>
+                    <div id="comments-${conf.id}" class="comments"></div>
+                    <div class="comment-form">
+                        <input type="text" id="comment-input-${conf.id}" placeholder="Add a comment..." />
+                        <button onclick="postComment(${conf.id})">💬 Comment</button>
+                    </div>
+                `;
                 container.appendChild(div);
-            });
+                renderComments(conf.id);
+            }
         }
 
-        // Post a new confession
+        async function renderComments(confessionId) {
+            const comments = await fetchComments(confessionId);
+            const commentsContainer = document.getElementById(`comments-${confessionId}`);
+            commentsContainer.innerHTML = comments.map(comment => `<p>${comment.comment}</p>`).join("");
+        }
+
         async function postConfession() {
             const nickname = document.getElementById("nickname").value.trim();
             const confession = document.getElementById("confession").value.trim();
-            if (!nickname || !confession) return alert("Please fill in all fields.");
+            if (!nickname || !confession) {
+                alert("Please fill in all fields.");
+                return;
+            }
             const { error } = await supabase.from("confessions").insert([{ nickname, confession }]);
             if (error) {
                 console.error("Error posting confession:", error);
@@ -253,11 +265,22 @@
             renderConfessions();
         }
 
-        // Real-time updates
-        supabase
-            .from("confessions")
-            .on("INSERT", () => renderConfessions())
-            .subscribe();
+        async function postComment(confessionId) {
+            const commentInput = document.getElementById(`comment-input-${confessionId}`);
+            const comment = commentInput.value.trim();
+            if (!comment) {
+                alert("Comment cannot be empty.");
+                return;
+            }
+            const { error } = await supabase.from("comments").insert([{ confession_id: confessionId, comment }]);
+            if (error) {
+                console.error("Error posting comment:", error);
+                alert("Failed to post comment.");
+                return;
+            }
+            commentInput.value = "";
+            renderComments(confessionId);
+        }
 
         renderConfessions();
     </script>
