@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3522 Confessions</title>
+    <style>
+        /* Handwriting-style font for the introduction */
+        @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            background: #fdf5e6;
+            height: 100vh;
+        }
+
+        /* Sidebar styling */
+        aside {
+            width: 33%;
+            background-color: #ffe6d5;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s;
+        }
+
+        aside.collapsed {
+            transform: translateX(-100%);
+        }
+
+        aside h2 {
+            font-size: 1.8em;
+            color: #f7b18c;
+            text-align: center;
+        }
+
+        aside ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        aside ul li {
+            margin-bottom: 15px;
+        }
+
+        aside ul li a {
+            text-decoration: none;
+            color: #e85d04;
+            font-weight: bold;
+        }
+
+        aside ul li a:hover {
+            color: #ff6f61;
+            text-decoration: underline;
+        }
+
+        /* Sidebar toggle button */
+        .toggle-sidebar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #6b3e26;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            z-index: 1000;
+        }
+
+        .toggle-sidebar:hover {
+            background-color: #5a3321;
+        }
+
+        /* Main content area */
+        main {
+            flex: 1;
+            padding: 20px;
+            background-color: #f0aa9d;
+            color: white;
+            height: 100vh;
+            overflow-y: auto;
+            transition: margin-left 0.3s, width 0.3s;
+        }
+
+        main.expanded {
+            flex: none;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.7em;
+            margin-bottom: 10px;
+            color: #4f1e02;
+        }
+
+        .intro {
+            font-family: 'Patrick Hand', cursive;
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #a24c06;
+            background-color: #f6ceb8;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .intro b {
+            font-size: 1.8em;
+            color: #ee5209; /* Golden highlight for emphasis */
+        }
+
+        #confession-form {
+            margin: 0 auto 20px;
+            padding: 15px;
+            background-color: #fffaf0;
+            border: 2px solid #ffb3a7;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+        }
+
+        #confession-form input, #confession-form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #f2bfb5;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        #confession-form button {
+            padding: 10px 15px;
+            color: white;
+            background-color: #ff6f61;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #confession-form button:hover {
+            background-color: #e05650;
+        }
+
+        .confession {
+            margin: 0 auto 20px;
+            padding: 15px;
+            background-color: #fffaf0;
+            border: 2px solid #ffb3a7;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+        }
+
+        .confession h3 {
+            margin: 0;
+            color: #e85d04;
+            font-size: 1.8em;
+        }
+
+        .confession p {
+            margin: 5px 0;
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .emojis span {
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 1.2em;
+            color: #333; /* Dark color for counts */
+        }
+
+        .emojis span:hover {
+            transform: scale(1.2);
+            transition: transform 0.2s;
+        }
+
+        .reaction-count {
+            font-size: 1em;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .comments {
+            margin-top: 10px;
+            padding-left: 15px;
+            border-left: 2px dashed #ffb3a7;
+        }
+
+        .comments p {
+            background: #fff0e5;
+            padding: 5px 10px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+        .comment-form {
+            margin-top: 10px;
+        }
+
+        .comment-form input {
+            width: calc(100% - 80px);
+            margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #f2bfb5;
+            border-radius: 5px;
+        }
+
+        .comment-form button {
+            padding: 10px;
+            color: white;
+            background-color: #ff6f61;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <h2>Confessions</h2>
+        <ul id="sidebar-list"></ul>
+    </aside>
+
+    <!-- Toggle Sidebar Button -->
+    <button class="toggle-sidebar" onclick="toggleSidebar()">☰ Toggle Sidebar</button>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+        <h1>3522 Confessions</h1>
+        <div class="intro">
+            <b>Share your experience in Rise of Kingdoms (ROK)</b><br><br>
+            Whether it’s the funniest or most noobish thing you’ve done, a memorable moment, an epic Kingdom vs. Kingdom (KvK) battle, or anything noteworthy—we want to hear it!<br><br>
+            Please ensure your post is respectful and free from any offensive, racist, or toxic content.
+        </div>
+
+        <div id="confession-form">
+            <input type="text" id="nickname" placeholder="Your nickname" required>
+            <textarea id="confession" placeholder="Your confession..." rows="3" required></textarea>
+            <button onclick="postConfession()">🌟 Post Confession 🌟</button>
+        </div>
+
+        <div id="confessions"></div>
+    </main>
+
+    <script>
+        const confessions = [];
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        function postConfession() {
+            const nickname = document.getElementById('nickname').value.trim();
+            const confession = document.getElementById('confession').value.trim();
+
+            if (nickname && confession) {
+                confessions.push({
+                    nickname: nickname,
+                    confession: confession,
+                    comments: [],
+                    reactions: { like: 0, love: 0, laugh: 0, cry: 0, congratulations: 0 }
+                });
+                renderConfessions();
+                document.getElementById('nickname').value = '';
+                document.getElementById('confession').value = '';
+            } else {
+                alert('Please fill in both fields!');
+            }
+        }
+
+        function renderConfessions() {
+            const confessionsContainer = document.getElementById('confessions');
+            const sidebarList = document.getElementById('sidebar-list');
+            confessionsContainer.innerHTML = '';
+            sidebarList.innerHTML = '';
+
+            confessions.forEach((conf, index) => {
+                const confessionDiv = document.createElement('div');
+                confessionDiv.className = 'confession';
+                confessionDiv.innerHTML = `
+                    <h3>${conf.nickname}</h3>
+                    <p>${conf.confession}</p>
+                    <div class="emojis">
+                        <span onclick="react(${index}, 'like')">👍 (${conf.reactions.like})</span>
+                        <span onclick="react(${index}, 'love')">❤️ (${conf.reactions.love})</span>
+                        <span onclick="react(${index}, 'laugh')">🤣 (${conf.reactions.laugh})</span>
+                        <span onclick="react(${index}, 'cry')">😭 (${conf.reactions.cry})</span>
+                        <span onclick="react(${index}, 'congratulations')">🎉 (${conf.reactions.congratulations})</span>
+                    </div>
+                    <div class="reaction-count">
+                        Total Reactions: ${Object.values(conf.reactions).reduce((a, b) => a + b, 0)}
+                    </div>
+                    <div class="comment-form">
+                        <input type="text" placeholder="Add a comment..." id="comment-${index}">
+                        <button onclick="addComment(${index})">💬 Comment</button>
+                    </div>
+                    <div class="comments">
+                        ${conf.comments.map(comment => `<p>💬 ${comment}</p>`).join('')}
+                    </div>
+                `;
+                confessionsContainer.appendChild(confessionDiv);
+
+                // Add to sidebar
+                const sidebarItem = document.createElement('li');
+                sidebarItem.innerHTML = `<a href="#confession-${index}" onclick="scrollToConfession(${index})">${conf.nickname}'s Confession</a>`;
+                sidebarList.appendChild(sidebarItem);
+
+                confessionDiv.id = `confession-${index}`;
+            });
+        }
+
+        function react(index, type) {
+            confessions[index].reactions[type]++;
+            renderConfessions();
+        }
+
+        function addComment(index) {
+            const commentInput = document.getElementById(`comment-${index}`);
+            const comment = commentInput.value.trim();
+
+            if (comment) {
+                confessions[index].comments.push(comment);
+                renderConfessions();
+            } else {
+                alert('Comment cannot be empty!');
+            }
+        }
+
+        function scrollToConfession(index) {
+            const confessionDiv = document.getElementById(`confession-${index}`);
+            confessionDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
