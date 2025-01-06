@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3522 Confessions</title>
+    <style>
+        /* Handwriting-style font for the introduction */
+        @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            background: #fdf5e6;
+            height: 100vh;
+        }
+
+        /* Sidebar styling */
+        aside {
+            width: 33%;
+            background-color: #ffe6d5;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s;
+        }
+
+        aside.collapsed {
+            transform: translateX(-100%);
+        }
+
+        aside h2 {
+            font-size: 1.8em;
+            color: #f7b18c;
+            text-align: center;
+        }
+
+        aside ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        aside ul li {
+            margin-bottom: 15px;
+        }
+
+        aside ul li a {
+            text-decoration: none;
+            color: #e85d04;
+            font-weight: bold;
+        }
+
+        aside ul li a:hover {
+            color: #ff6f61;
+            text-decoration: underline;
+        }
+
+        /* Sidebar toggle button */
+        .toggle-sidebar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #6b3e26;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            z-index: 1000;
+        }
+
+        .toggle-sidebar:hover {
+            background-color: #5a3321;
+        }
+
+        /* Main content area */
+        main {
+            flex: 1;
+            padding: 20px;
+            background-color: #f0aa9d;
+            color: white;
+            height: 100vh;
+            overflow-y: auto;
+            transition: margin-left 0.3s, width 0.3s;
+        }
+
+        main.expanded {
+            flex: none;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.7em;
+            margin-bottom: 10px;
+            color: #4f1e02;
+        }
+
+        .intro {
+            font-family: 'Patrick Hand', cursive;
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #a24c06;
+            background-color: #f6ceb8;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .intro b {
+            font-size: 1.8em;
+            color: #ee5209;
+        }
+
+        #confession-form {
+            margin: 0 auto 20px;
+            padding: 15px;
+            background-color: #fffaf0;
+            border: 2px solid #ffb3a7;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+        }
+
+        #confession-form input, #confession-form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #f2bfb5;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        #confession-form button {
+            padding: 10px 15px;
+            color: white;
+            background-color: #ff6f61;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #confession-form button:hover {
+            background-color: #e05650;
+        }
+
+        .confession {
+            margin: 0 auto 20px;
+            padding: 15px;
+            background-color: #fffaf0;
+            border: 2px solid #ffb3a7;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+        }
+
+        .confession h3 {
+            margin: 0;
+            color: #e85d04;
+            font-size: 1.8em;
+        }
+
+        .confession p {
+            margin: 5px 0;
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .emojis span {
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .emojis span:hover {
+            transform: scale(1.2);
+            transition: transform 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <h2>Confessions</h2>
+        <ul id="sidebar-list"></ul>
+    </aside>
+
+    <!-- Toggle Sidebar Button -->
+    <button class="toggle-sidebar" onclick="toggleSidebar()">☰ Toggle Sidebar</button>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+        <h1>3522 Confessions</h1>
+        <div class="intro">
+            <b>Share your experience in Rise of Kingdoms (ROK)</b><br><br>
+            Whether it’s the funniest or most noobish thing you’ve done, a memorable moment, an epic Kingdom vs. Kingdom (KvK) battle, or anything noteworthy—we want to hear it!<br><br>
+            Please ensure your post is respectful and free from any offensive, racist, or toxic content.
+        </div>
+
+        <div id="confession-form">
+            <input type="text" id="nickname" placeholder="Your nickname" required>
+            <textarea id="confession" placeholder="Your confession..." rows="3" required></textarea>
+            <button onclick="postConfession()">🌟 Post Confession 🌟</button>
+        </div>
+
+        <div id="confessions"></div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const supabaseUrl = "https://dsrrjasoddkdaqeostvd.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcnJqYXNvZGRrZGFxZW9zdHZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxNzYwNDEsImV4cCI6MjA1MTc1MjA0MX0.Sevb5RZv8WG6il7G-pxIdGrJ_-xWy6CawO4tP5npY1g";
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Fetch and display confessions
+        async function fetchConfessions() {
+            const { data: confessions, error } = await supabase.from("confessions").select("*").order("created_at", { ascending: false });
+            if (error) console.error("Error fetching confessions:", error);
+            return confessions || [];
+        }
+
+        async function renderConfessions() {
+            const confessions = await fetchConfessions();
+            const container = document.getElementById("confessions");
+            container.innerHTML = "";
+            confessions.forEach((conf) => {
+                const div = document.createElement("div");
+                div.className = "confession";
+                div.innerHTML = `<h3>${conf.nickname}</h3><p>${conf.confession}</p>`;
+                container.appendChild(div);
+            });
+        }
+
+        // Post a new confession
+        async function postConfession() {
+            const nickname = document.getElementById("nickname").value.trim();
+            const confession = document.getElementById("confession").value.trim();
+            if (!nickname || !confession) return alert("Please fill in all fields.");
+            const { error } = await supabase.from("confessions").insert([{ nickname, confession }]);
+            if (error) {
+                console.error("Error posting confession:", error);
+                alert("Failed to post confession.");
+                return;
+            }
+            document.getElementById("nickname").value = "";
+            document.getElementById("confession").value = "";
+            renderConfessions();
+        }
+
+        // Real-time updates
+        supabase
+            .from("confessions")
+            .on("INSERT", () => renderConfessions())
+            .subscribe();
+
+        renderConfessions();
+    </script>
+</body>
+</html>
