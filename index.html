@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3522 Confessions</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -42,16 +41,6 @@
             color: white;
             height: 100vh;
             overflow-y: auto;
-            transition: margin-left 0.3s, width 0.3s;
-        }
-        .intro {
-            font-family: 'Patrick Hand', cursive;
-            text-align: center;
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            background-color: #f6ceb8;
-            padding: 20px;
-            border-radius: 10px;
         }
         #confession-form {
             margin: 0 auto 20px;
@@ -87,10 +76,6 @@
 
     <main id="main-content">
         <h1>3522 Confessions</h1>
-        <div class="intro">
-            <b>Share your experience in Rise of Kingdoms (ROK)</b>
-            <p>Whether it’s funny, noobish, or memorable, share it here!</p>
-        </div>
 
         <div id="confession-form">
             <input type="text" id="nickname" placeholder="Your nickname">
@@ -108,6 +93,154 @@
             "https://rnhmljftksyxirxfamft.supabase.co",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaG1samZ0a3N5eGlyeGZhbWZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxODAzMjYsImV4cCI6MjA1MTc1NjMyNn0.6Zqulsb66BOyRt1C4rgNXgcyz5hluzHz9tT3T02Qmkg"
         );
+
+        console.log("Supabase initialized:", supabase);
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const mainContent = document.getElementById("main-content");
+            sidebar.classList.toggle("collapsed");
+            mainContent.classList.toggle("expanded");
+        }
+
+        async function fetchConfessions() {
+            const { data: confessions, error } = await supabase.from("confessions").select("*").order("created_at", { ascending: false });
+            if (error) console.error("Error fetching confessions:", error);
+            return confessions || [];
+        }
+
+        async function postConfession() {
+            const nickname = document.getElementById("nickname").value.trim();
+            const confession = document.getElementById("confession").value.trim();
+            if (!nickname || !confession) {
+                alert("Please fill in all fields.");
+                return;
+            }
+            const { error } = await supabase.from("confessions").insert([{ nickname, confession }]);
+            if (error) {
+                console.error("Error posting confession:", error);
+                alert("Failed to post confession.");
+                return;
+            }
+            document.getElementById("nickname").value = "";
+            document.getElementById("confession").value = "";
+            renderConfessions();
+        }
+
+        async function renderConfessions() {
+            const confessions = await fetchConfessions();
+            const container = document.getElementById("confessions");
+            container.innerHTML =
+
+Let me clarify and simplify the solution. I will provide **clear instructions** along with the **full, corrected code** to ensure it works as expected. I’ll also focus on making sure the **Supabase client initialization** happens at the very start of the `<script>` tag and that the interface works properly.
+
+---
+
+### **Where to Put Supabase Initialization**
+The Supabase client initialization should go at the **very beginning of your `<script>` tag**, before any other code that references `supabase`. This ensures that `supabase` is available when other functions are called.
+
+---
+
+### **Updated Full Code**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3522 Confessions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            background: #fdf5e6;
+            height: 100vh;
+        }
+        aside {
+            width: 33%;
+            background-color: #ffe6d5;
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s;
+        }
+        aside.collapsed {
+            transform: translateX(-100%);
+        }
+        .toggle-sidebar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #6b3e26;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+            background-color: #f0aa9d;
+            color: white;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        #confession-form {
+            margin: 0 auto 20px;
+            padding: 15px;
+            background-color: #fffaf0;
+            border-radius: 12px;
+            max-width: 600px;
+        }
+        #confession-form input, #confession-form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        #confessions {
+            max-width: 600px;
+            margin: auto;
+        }
+        .confession {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fffaf0;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <aside id="sidebar">
+        <h2>Confessions</h2>
+        <ul id="sidebar-list"></ul>
+    </aside>
+
+    <button class="toggle-sidebar" onclick="toggleSidebar()">☰ Toggle Sidebar</button>
+
+    <main id="main-content">
+        <h1>3522 Confessions</h1>
+
+        <div id="confession-form">
+            <input type="text" id="nickname" placeholder="Your nickname">
+            <textarea id="confession" placeholder="Your confession..." rows="3"></textarea>
+            <button onclick="postConfession()">Post Confession</button>
+        </div>
+
+        <div id="confessions"></div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        // Supabase client initialization at the very top
+        const supabase = supabase.createClient(
+            "https://rnhmljftksyxirxfamft.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaG1samZ0a3N5eGlyeGZhbWZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxODAzMjYsImV4cCI6MjA1MTc1NjMyNn0.6Zqulsb66BOyRt1C4rgNXgcyz5hluzHz9tT3T02Qmkg"
+        );
+
+        console.log("Supabase initialized:", supabase);
 
         function toggleSidebar() {
             const sidebar = document.getElementById("sidebar");
