@@ -214,11 +214,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
-        // Supabase setup
         const supabaseUrl = "https://dsrrjasoddkdaqeostvd.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcnJqYXNvZGRrZGFxZW9zdHZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxNzYwNDEsImV4cCI6MjA1MTc1MjA0MX0.Sevb5RZv8WG6il7G-pxIdGrJ_-xWy6CawO4tP5npY1g";
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+        // Fetch and display confessions
         async function fetchConfessions() {
             const { data: confessions, error } = await supabase.from("confessions").select("*").order("created_at", { ascending: false });
             if (error) console.error("Error fetching confessions:", error);
@@ -237,15 +237,27 @@
             });
         }
 
+        // Post a new confession
         async function postConfession() {
             const nickname = document.getElementById("nickname").value.trim();
             const confession = document.getElementById("confession").value.trim();
             if (!nickname || !confession) return alert("Please fill in all fields.");
-            await supabase.from("confessions").insert([{ nickname, confession }]);
+            const { error } = await supabase.from("confessions").insert([{ nickname, confession }]);
+            if (error) {
+                console.error("Error posting confession:", error);
+                alert("Failed to post confession.");
+                return;
+            }
             document.getElementById("nickname").value = "";
             document.getElementById("confession").value = "";
             renderConfessions();
         }
+
+        // Real-time updates
+        supabase
+            .from("confessions")
+            .on("INSERT", () => renderConfessions())
+            .subscribe();
 
         renderConfessions();
     </script>
