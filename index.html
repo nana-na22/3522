@@ -196,6 +196,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
+        // Initialize Supabase
         const supabase = supabase.createClient(
             "https://rnhmljftksyxirxfamft.supabase.co",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaG1samZ0a3N5eGlyeGZhbWZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxODAzMjYsImV4cCI6MjA1MTc1NjMyNn0.6Zqulsb66BOyRt1C4rgNXgcyz5hluzHz9tT3T02Qmkg"
@@ -214,10 +215,22 @@
             return confessions || [];
         }
 
-        async function fetchComments(confessionId) {
-            const { data: comments, error } = await supabase.from("comments").select("*").eq("confession_id", confessionId).order("created_at", { ascending: true });
-            if (error) console.error(`Error fetching comments for confession ${confessionId}:`, error);
-            return comments || [];
+        async function postConfession() {
+            const nickname = document.getElementById("nickname").value.trim();
+            const confession = document.getElementById("confession").value.trim();
+            if (!nickname || !confession) {
+                alert("Please fill in all fields.");
+                return;
+            }
+            const { error } = await supabase.from("confessions").insert([{ nickname, confession }]);
+            if (error) {
+                console.error("Error posting confession:", error);
+                alert("Failed to post confession.");
+                return;
+            }
+            document.getElementById("nickname").value = "";
+            document.getElementById("confession").value = "";
+            renderConfessions();
         }
 
         async function renderConfessions() {
@@ -242,27 +255,13 @@
         }
 
         async function renderComments(confessionId) {
-            const comments = await fetchComments(confessionId);
+            const { data: comments, error } = await supabase.from("comments").select("*").eq("confession_id", confessionId).order("created_at", { ascending: true });
+            if (error) {
+                console.error(`Error fetching comments for confession ${confessionId}:`, error);
+                return;
+            }
             const commentsContainer = document.getElementById(`comments-${confessionId}`);
             commentsContainer.innerHTML = comments.map(comment => `<p>${comment.comment}</p>`).join("");
-        }
-
-        async function postConfession() {
-            const nickname = document.getElementById("nickname").value.trim();
-            const confession = document.getElementById("confession").value.trim();
-            if (!nickname || !confession) {
-                alert("Please fill in all fields.");
-                return;
-            }
-            const { error } = await supabase.from("confessions").insert([{ nickname, confession }]);
-            if (error) {
-                console.error("Error posting confession:", error);
-                alert("Failed to post confession.");
-                return;
-            }
-            document.getElementById("nickname").value = "";
-            document.getElementById("confession").value = "";
-            renderConfessions();
         }
 
         async function postComment(confessionId) {
