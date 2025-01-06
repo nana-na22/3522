@@ -6,7 +6,6 @@
     <title>3522 Confessions</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
-
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -14,21 +13,17 @@
             background: #fdf5e6;
             height: 100vh;
         }
-
         aside {
             width: 33%;
             background-color: #ffe6d5;
             padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
             height: 100vh;
             overflow-y: auto;
             transition: transform 0.3s;
         }
-
         aside.collapsed {
             transform: translateX(-100%);
         }
-
         .toggle-sidebar {
             position: absolute;
             top: 20px;
@@ -39,14 +34,7 @@
             padding: 10px 15px;
             cursor: pointer;
             border-radius: 5px;
-            font-size: 1em;
-            z-index: 1000;
         }
-
-        .toggle-sidebar:hover {
-            background-color: #5a3321;
-        }
-
         main {
             flex: 1;
             padding: 20px;
@@ -56,139 +44,58 @@
             overflow-y: auto;
             transition: margin-left 0.3s, width 0.3s;
         }
-
-        main.expanded {
-            width: 100%;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2.7em;
-            margin-bottom: 10px;
-            color: #4f1e02;
-        }
-
         .intro {
             font-family: 'Patrick Hand', cursive;
             text-align: center;
             font-size: 1.5em;
             margin-bottom: 30px;
-            color: #a24c06;
             background-color: #f6ceb8;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
-
         #confession-form {
             margin: 0 auto 20px;
             padding: 15px;
             background-color: #fffaf0;
-            border: 2px solid #ffb3a7;
             border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             max-width: 600px;
         }
-
         #confession-form input, #confession-form textarea {
             width: 100%;
             margin-bottom: 10px;
             padding: 10px;
-            border: 1px solid #f2bfb5;
-            border-radius: 5px;
-            font-family: inherit;
         }
-
-        #confession-form button {
-            padding: 10px 15px;
-            color: white;
-            background-color: #ff6f61;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
+        #confessions {
+            max-width: 600px;
+            margin: auto;
         }
-
-        #confession-form button:hover {
-            background-color: #e05650;
-        }
-
         .confession {
-            margin: 0 auto 20px;
+            margin: 20px 0;
             padding: 15px;
             background-color: #fffaf0;
-            border: 2px solid #ffb3a7;
             border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-        }
-
-        .confession h3 {
-            margin: 0;
-            color: #e85d04;
-            font-size: 1.8em;
-        }
-
-        .confession p {
-            margin: 5px 0;
-            color: #333;
-            font-size: 1.5em;
-        }
-
-        .comments p {
-            margin: 5px 0;
-            font-size: 1em;
-            color: #333;
-            background-color: #f6e7e0;
-            padding: 5px;
-            border-radius: 5px;
-        }
-
-        .comment-form {
-            margin-top: 10px;
-        }
-
-        .comment-form input {
-            width: calc(100% - 80px);
-            margin-right: 10px;
-            padding: 10px;
-            border: 1px solid #f2bfb5;
-            border-radius: 5px;
-        }
-
-        .comment-form button {
-            padding: 10px;
-            color: white;
-            background-color: #ff6f61;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <aside id="sidebar">
         <h2>Confessions</h2>
         <ul id="sidebar-list"></ul>
     </aside>
 
-    <!-- Toggle Sidebar Button -->
     <button class="toggle-sidebar" onclick="toggleSidebar()">☰ Toggle Sidebar</button>
 
-    <!-- Main Content Area -->
     <main id="main-content">
         <h1>3522 Confessions</h1>
         <div class="intro">
-            <b>Share your experience in Rise of Kingdoms (ROK)</b><br><br>
-            Whether it’s the funniest or most noobish thing you’ve done, a memorable moment, an epic Kingdom vs. Kingdom (KvK) battle, or anything noteworthy—we want to hear it!<br><br>
-            Please ensure your post is respectful and free from any offensive, racist, or toxic content.
+            <b>Share your experience in Rise of Kingdoms (ROK)</b>
+            <p>Whether it’s funny, noobish, or memorable, share it here!</p>
         </div>
 
         <div id="confession-form">
-            <input type="text" id="nickname" placeholder="Your nickname" required>
-            <textarea id="confession" placeholder="Your confession..." rows="3" required></textarea>
-            <button onclick="postConfession()">🌟 Post Confession 🌟</button>
+            <input type="text" id="nickname" placeholder="Your nickname">
+            <textarea id="confession" placeholder="Your confession..." rows="3"></textarea>
+            <button onclick="postConfession()">Post Confession</button>
         </div>
 
         <div id="confessions"></div>
@@ -237,48 +144,15 @@
             const confessions = await fetchConfessions();
             const container = document.getElementById("confessions");
             container.innerHTML = "";
-            for (const conf of confessions) {
+            confessions.forEach(conf => {
                 const div = document.createElement("div");
                 div.className = "confession";
                 div.innerHTML = `
                     <h3>${conf.nickname}</h3>
                     <p>${conf.confession}</p>
-                    <div id="comments-${conf.id}" class="comments"></div>
-                    <div class="comment-form">
-                        <input type="text" id="comment-input-${conf.id}" placeholder="Add a comment..." />
-                        <button onclick="postComment(${conf.id})">💬 Comment</button>
-                    </div>
                 `;
                 container.appendChild(div);
-                renderComments(conf.id);
-            }
-        }
-
-        async function renderComments(confessionId) {
-            const { data: comments, error } = await supabase.from("comments").select("*").eq("confession_id", confessionId).order("created_at", { ascending: true });
-            if (error) {
-                console.error(`Error fetching comments for confession ${confessionId}:`, error);
-                return;
-            }
-            const commentsContainer = document.getElementById(`comments-${confessionId}`);
-            commentsContainer.innerHTML = comments.map(comment => `<p>${comment.comment}</p>`).join("");
-        }
-
-        async function postComment(confessionId) {
-            const commentInput = document.getElementById(`comment-input-${confessionId}`);
-            const comment = commentInput.value.trim();
-            if (!comment) {
-                alert("Comment cannot be empty.");
-                return;
-            }
-            const { error } = await supabase.from("comments").insert([{ confession_id: confessionId, comment }]);
-            if (error) {
-                console.error("Error posting comment:", error);
-                alert("Failed to post comment.");
-                return;
-            }
-            commentInput.value = "";
-            renderComments(confessionId);
+            });
         }
 
         renderConfessions();
