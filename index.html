@@ -244,9 +244,9 @@ function calculateRequirement() {
     return;
   }
 
-  // Format numbers using US style without replacing commas
-  var dkpGoalFormatted = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(dkpGoal);
-  var deadRequirementFormatted = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(deadRequirement);
+  // Format numbers with no decimals (rounded)
+  var dkpGoalFormatted = new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(dkpGoal);
+  var deadRequirementFormatted = new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(deadRequirement);
 
   // Display main results in the description field only
   document.querySelector('.description').style.display = 'block';
@@ -308,7 +308,7 @@ function updateChart(dkpGoal, deadRequirement) {
                 label += ': ';
               }
               if (context.parsed.y !== null) {
-                label += new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(parseFloat(context.parsed.y.toFixed(0))) + ' Points';
+                label += new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(context.parsed.y) + ' Points';
               }
               return label;
             }
