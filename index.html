@@ -62,17 +62,18 @@
     #chartContainer {
       margin-top: 30px;
     }
-    .point-table {
+    .point-table, .bonus-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
-    .point-table th, .point-table td {
+    .point-table th, .point-table td,
+    .bonus-table th, .bonus-table td {
       border: 1px solid #ddd;
       padding: 8px;
-      text-align: left;
+      text-align: center;
     }
-    .point-table th {
+    .point-table th, .bonus-table th {
       background-color: #f2f2f2;
     }
     .point-info {
@@ -116,6 +117,9 @@
       </tr>
     </table>
   </div>
+
+  <!-- Bonus and Reduction Information Table -->
+  <div id="bonusNote" class="description" style="display:none;"></div>
 </div>
 
 <script>
@@ -141,7 +145,6 @@ function calculateRequirement() {
     dkpGoal = power * 0.10;
     deadRequirement = power * 0.018;
     category = "10% DKP and 1.8% Dead Requirement category";
-    // Placeholder bonus and reduction values
     dkpBonus = 0;
     dkpReduction = 0;
   } else if (power >= 30000000 && power <= 39999999) {
@@ -215,7 +218,7 @@ function calculateRequirement() {
     return;
   }
 
-  // Format numbers (using dots for thousand separators)
+  // Format numbers with dots as thousand separators
   var dkpGoalFormatted = new Intl.NumberFormat('en-US').format(dkpGoal).replace(/,/g, '.');
   var deadRequirementFormatted = new Intl.NumberFormat('en-US').format(deadRequirement).replace(/,/g, '.');
   var dkpBonusFormatted = new Intl.NumberFormat('en-US').format(dkpBonus).replace(/,/g, '.');
@@ -232,15 +235,21 @@ function calculateRequirement() {
     <p><strong>Dead Requirement:</strong> ${deadRequirementFormatted}</p>
   `;
 
-  // Append bonus and reduction information as a note at the end
-  let bonusNoteHTML = `<p><strong>Note:</strong> Based on the Excel formulas, the DKP Bonus is calculated as <em>${dkpBonusFormatted}</em> and the DKP Reduction as <em>${dkpReductionFormatted}</em>.</p>`;
+  // Display DKP Bonus and DKP Reduction information in a table
+  let bonusNoteHTML = `
+    <h3>Bonus & Reduction Information</h3>
+    <table class="bonus-table">
+      <tr>
+        <th>DKP Bonus</th>
+        <th>DKP Reduction</th>
+      </tr>
+      <tr>
+        <td>${dkpBonusFormatted}</td>
+        <td>${dkpReductionFormatted}</td>
+      </tr>
+    </table>
+  `;
   let bonusNoteDiv = document.getElementById('bonusNote');
-  if (!bonusNoteDiv) {
-    bonusNoteDiv = document.createElement('div');
-    bonusNoteDiv.id = 'bonusNote';
-    bonusNoteDiv.className = 'description';
-    document.querySelector('.container').appendChild(bonusNoteDiv);
-  }
   bonusNoteDiv.style.display = 'block';
   bonusNoteDiv.innerHTML = bonusNoteHTML;
 
