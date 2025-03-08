@@ -133,54 +133,89 @@ function calculateRequirement() {
     alert('Please enter a valid value for Power.');
     return;
   }
-
-  // DKP Goal and Dead Requirement based on thresholds
+  
   let dkpGoal, deadRequirement, category;
+  let dkpBonus = 0, dkpReduction = 0;
 
-  if (power < 30000000) {
-    dkpGoal = power * 0.1;
-    deadRequirement = power * 0.01;
-    category = '10% DKP and 1% Dead Requirement category';
-  } else if (power < 45000000) {
-    dkpGoal = power * 0.15;
-    deadRequirement = power * 0.013;
-    category = '15% DKP and 1.3% Dead Requirement category';
-  } else if (power < 65000000) {
-    dkpGoal = power * 0.2;
-    deadRequirement = power * 0.016;
-    category = '20% DKP and 1.6% Dead Requirement category';
-  } else if (power < 85000000) {
-    dkpGoal = power * 0.25;
-    deadRequirement = power * 0.02;
-    category = '25% DKP and 2% Dead Requirement category';
-  } else {
-    dkpGoal = power * 0.3;
-    deadRequirement = power * 0.028;
-    category = '30% DKP and 2.8% Dead Requirement category';
-  }
-
-  // --- New logic for DKP Bonus and DKP Reduction (from Excel formulas) ---
-  // The following bonus and reduction rates are assumed based on the Excel formulas.
-  let dkpBonus, dkpReduction;
-  if (power < 30000000) {
+  if (power >= 20000000 && power <= 29999999) {
+    dkpGoal = power * 0.10;
+    deadRequirement = power * 0.018;
+    category = "10% DKP and 1.8% Dead Requirement category";
+    // Placeholder bonus and reduction values
     dkpBonus = 0;
     dkpReduction = 0;
-  } else if (power < 45000000) {
-    dkpBonus = dkpGoal * 0.02;     // e.g., a 2% bonus on DKP Goal
-    dkpReduction = deadRequirement * 0.1; // e.g., a 10% reduction on Dead Requirement
-  } else if (power < 65000000) {
+  } else if (power >= 30000000 && power <= 39999999) {
+    dkpGoal = power * 0.12;
+    deadRequirement = power * 0.018;
+    category = "12% DKP and 1.8% Dead Requirement category";
+    dkpBonus = dkpGoal * 0.02;
+    dkpReduction = deadRequirement * 0.05;
+  } else if (power >= 40000000 && power <= 49999999) {
+    dkpGoal = power * 0.15;
+    deadRequirement = power * 0.018;
+    category = "15% DKP and 1.8% Dead Requirement category";
     dkpBonus = dkpGoal * 0.03;
-    dkpReduction = deadRequirement * 0.15;
-  } else if (power < 85000000) {
+    dkpReduction = deadRequirement * 0.05;
+  } else if (power >= 50000000 && power <= 59999999) {
+    dkpGoal = power * 0.20;
+    deadRequirement = power * 0.012;
+    category = "20% DKP and 1.2% Dead Requirement category";
     dkpBonus = dkpGoal * 0.04;
-    dkpReduction = deadRequirement * 0.2;
-  } else {
+    dkpReduction = deadRequirement * 0.10;
+  } else if (power >= 60000000 && power <= 69999999) {
+    dkpGoal = power * 0.20;
+    deadRequirement = power * 0.012;
+    category = "20% DKP and 1.2% Dead Requirement category";
+    dkpBonus = dkpGoal * 0.04;
+    dkpReduction = deadRequirement * 0.10;
+  } else if (power >= 70000000 && power <= 79999999) {
+    dkpGoal = power * 0.25;
+    deadRequirement = power * 0.012;
+    category = "25% DKP and 1.2% Dead Requirement category";
     dkpBonus = dkpGoal * 0.05;
-    dkpReduction = deadRequirement * 0.25;
+    dkpReduction = deadRequirement * 0.15;
+  } else if (power >= 80000000 && power <= 89999999) {
+    dkpGoal = power * 0.25;
+    deadRequirement = power * 0.012;
+    category = "25% DKP and 1.2% Dead Requirement category";
+    dkpBonus = dkpGoal * 0.05;
+    dkpReduction = deadRequirement * 0.15;
+  } else if (power >= 90000000 && power <= 99999999) {
+    dkpGoal = power * 0.35;
+    deadRequirement = power * 0.012;
+    category = "35% DKP and 1.2% Dead Requirement category";
+    dkpBonus = dkpGoal * 0.06;
+    dkpReduction = deadRequirement * 0.15;
+  } else if (power >= 100000000 && power <= 109999999) {
+    dkpGoal = power * 0.35;
+    deadRequirement = power * 0.015;
+    category = "35% DKP and 1.5% Dead Requirement category";
+    dkpBonus = dkpGoal * 0.06;
+    dkpReduction = deadRequirement * 0.20;
+  } else if (power >= 110000000 && power <= 119999999) {
+    dkpGoal = power * 0.35;
+    deadRequirement = power * 0.015;
+    category = "35% DKP and 1.5% Dead Requirement category";
+    dkpBonus = dkpGoal * 0.06;
+    dkpReduction = deadRequirement * 0.20;
+  } else if (power >= 120000000 && power <= 129999999) {
+    dkpGoal = power * 0.40;
+    deadRequirement = power * 0.015;
+    category = "40% DKP and 1.5% Dead Requirement category";
+    dkpBonus = dkpGoal * 0.07;
+    dkpReduction = deadRequirement * 0.20;
+  } else if (power >= 130000000 && power <= 139999999) {
+    dkpGoal = power * 0.40;
+    deadRequirement = power * 0.015;
+    category = "40% DKP and 1.5% Dead Requirement category";
+    dkpBonus = dkpGoal * 0.07;
+    dkpReduction = deadRequirement * 0.20;
+  } else {
+    alert("Power is out of the supported range.");
+    return;
   }
-  // -----------------------------------------------------------------------
 
-  // Format numbers to display with dots as thousand separators
+  // Format numbers (using dots for thousand separators)
   var dkpGoalFormatted = new Intl.NumberFormat('en-US').format(dkpGoal).replace(/,/g, '.');
   var deadRequirementFormatted = new Intl.NumberFormat('en-US').format(deadRequirement).replace(/,/g, '.');
   var dkpBonusFormatted = new Intl.NumberFormat('en-US').format(dkpBonus).replace(/,/g, '.');
@@ -198,7 +233,7 @@ function calculateRequirement() {
   `;
 
   // Append bonus and reduction information as a note at the end
-  let bonusNoteHTML = `<p><strong>Note:</strong> DKP Bonus is calculated as <em>${dkpBonusFormatted}</em> and DKP Reduction as <em>${dkpReductionFormatted}</em> based on the provided Excel formulas.</p>`;
+  let bonusNoteHTML = `<p><strong>Note:</strong> Based on the Excel formulas, the DKP Bonus is calculated as <em>${dkpBonusFormatted}</em> and the DKP Reduction as <em>${dkpReductionFormatted}</em>.</p>`;
   let bonusNoteDiv = document.getElementById('bonusNote');
   if (!bonusNoteDiv) {
     bonusNoteDiv = document.createElement('div');
