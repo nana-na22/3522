@@ -47,7 +47,7 @@
     button:hover {
       background-color: #2980b9;
     }
-    .result, .description, .point-info {
+    .description, .point-info {
       margin-top: 20px;
       padding: 15px;
       background-color: #ecf0f1;
@@ -87,7 +87,6 @@
   <input type="text" id="powerInput" placeholder="Enter Power" onkeyup="formatNumber(this)">
   <button onclick="calculateRequirement()">Calculate DKP</button>
   
-  <div id="result" class="result" style="display:none;"></div>
   <div class="category" style="display:none;"></div>
   <div class="description" style="display:none;"></div>
 
@@ -96,7 +95,7 @@
   </div>
 
   <div class="point-info" style="display:none;">
-    <h3>Point Information</h3>
+    <h3>DKP Point Information</h3>
     <table class="point-table">
       <tr>
         <th>Action</th>
@@ -113,6 +112,12 @@
       <tr>
         <td>Dead</td>
         <td>10 Points</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <em>*** DKP is not KP ***<br>
+          DKP Formula = T4 kill * 1 + T5 kills * 2 + Dead * 10</em>
+        </td>
       </tr>
     </table>
   </div>
@@ -189,20 +194,18 @@ function calculateRequirement() {
     return;
   }
 
-  // Format numbers with dots as thousand separators
+  // Format numbers using dots as thousand separators
   var dkpGoalFormatted = new Intl.NumberFormat('en-US').format(dkpGoal).replace(/,/g, '.');
   var deadRequirementFormatted = new Intl.NumberFormat('en-US').format(deadRequirement).replace(/,/g, '.');
 
-  // Display the main results
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('result').innerHTML = 'DKP Goal: ' + dkpGoalFormatted + '<br>Dead Requirement: ' + deadRequirementFormatted;
-  document.querySelector('.category').style.display = 'block';
-  document.querySelector('.category').textContent = 'You fall into the ' + category + '.';
+  // Display the main results using the description field only
   document.querySelector('.description').style.display = 'block';
   document.querySelector('.description').innerHTML = `
     <p><strong>DKP Goal:</strong> ${dkpGoalFormatted}</p>
     <p><strong>Dead Requirement:</strong> ${deadRequirementFormatted}</p>
   `;
+  document.querySelector('.category').style.display = 'block';
+  document.querySelector('.category').textContent = 'You fall into the ' + category + '.';
 
   updateChart(dkpGoal, deadRequirement);
   document.querySelector('.point-info').style.display = 'block';
