@@ -75,15 +75,12 @@
     .point-table th {
       background-color: #f2f2f2;
     }
-    .point-info {
-      margin-top: 40px;
-    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Kingdom 3522 KvK4 KPI Calculator</h2>
+  <h2>Kingdom 3522 KPI Calculator</h2>
   <input type="text" id="powerInput" placeholder="Enter Power" onkeyup="formatNumber(this)">
   <button onclick="calculateRequirement()">Calculate DKP</button>
   
@@ -94,8 +91,9 @@
     <canvas id="resultChart"></canvas>
   </div>
 
+  <!-- Point Information Table -->
   <div class="point-info" style="display:none;">
-    <h3>DKP Point Information</h3>
+    <h3>Point Information</h3>
     <table class="point-table">
       <tr>
         <th>Action</th>
@@ -118,6 +116,56 @@
           <em>*** DKP is not KP ***<br>
           DKP Formula = T4 kill * 1 + T5 kills * 2 + Dead * 10</em>
         </td>
+      </tr>
+    </table>
+  </div>
+  
+  <!-- DKP Bonus Table -->
+  <div class="point-info" style="display:none;">
+    <h3>DKP bonus</h3>
+    <table class="point-table">
+      <tr>
+        <th>Action</th>
+        <th>Points</th>
+      </tr>
+      <tr>
+        <td>Resource assistance</td>
+        <td>0.1% * Amount of Resources Donated</td>
+      </tr>
+      <tr>
+        <td>Rally/Garrison leaders</td>
+        <td>+10%</td>
+      </tr>
+      <tr>
+        <td>Flag Team</td>
+        <td>+10%</td>
+      </tr>
+      <tr>
+        <td>Leadership</td>
+        <td>+10%</td>
+      </tr>    
+    </table>
+  </div>
+  
+  <!-- DKP Reduction Table -->
+  <div class="point-info" style="display:none; background-color: #d8998b;">
+    <h3>DKP reduction</h3>
+    <table class="point-table">
+      <tr>
+        <th>Action</th>
+        <th>Points</th>
+      </tr>
+      <tr>
+        <td>City hits without permission</td>
+        <td>-5%</td>
+      </tr>
+      <tr>
+        <td>Not following markers/balls</td>
+        <td>-5%</td>
+      </tr>
+      <tr>
+        <td>Buffing kills/dueling during war</td>
+        <td>-10%</td>
       </tr>
     </table>
   </div>
@@ -198,7 +246,7 @@ function calculateRequirement() {
   var dkpGoalFormatted = new Intl.NumberFormat('en-US').format(dkpGoal).replace(/,/g, '.');
   var deadRequirementFormatted = new Intl.NumberFormat('en-US').format(deadRequirement).replace(/,/g, '.');
 
-  // Display the main results using the description field only
+  // Display main results in the description field only
   document.querySelector('.description').style.display = 'block';
   document.querySelector('.description').innerHTML = `
     <p><strong>DKP Goal:</strong> ${dkpGoalFormatted}</p>
@@ -208,7 +256,10 @@ function calculateRequirement() {
   document.querySelector('.category').textContent = 'You fall into the ' + category + '.';
 
   updateChart(dkpGoal, deadRequirement);
-  document.querySelector('.point-info').style.display = 'block';
+  // Show all elements with the class "point-info"
+  document.querySelectorAll('.point-info').forEach(function(elem) {
+    elem.style.display = 'block';
+  });
 }
 
 function updateChart(dkpGoal, deadRequirement) {
