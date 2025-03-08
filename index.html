@@ -157,7 +157,7 @@
       </tr>
       <tr>
         <td>City hits without permission</td>
-        <td>-5% DKP </td>
+        <td>-5% DKP</td>
       </tr>
       <tr>
         <td>Not following markers/balls</td>
@@ -177,13 +177,13 @@ let chart;
 function formatNumber(input) {
   // Remove any non-digit characters
   let value = input.value.replace(/\D/g, '');
-  // Format using US style: comma for thousands, period for decimals
+  // Format using US style: comma for thousands and period for decimals
   input.value = new Intl.NumberFormat('en-US').format(value);
 }
 
 function calculateRequirement() {
   var powerStr = document.getElementById('powerInput').value;
-  // Remove commas from input before parsing
+  // Remove commas before parsing
   var power = parseFloat(powerStr.replace(/,/g, ''));
   if (!power) {
     alert('Please enter a valid value for Power.');
@@ -191,7 +191,6 @@ function calculateRequirement() {
   }
   
   let dkpGoal, deadRequirement, category;
-
   if (power >= 20000000 && power <= 29999999) {
     dkpGoal = power * 0.10;
     deadRequirement = power * 0.018;
@@ -245,9 +244,9 @@ function calculateRequirement() {
     return;
   }
 
-  // Format numbers using US style: commas for thousands, period for decimals
-  var dkpGoalFormatted = new Intl.NumberFormat('en-US').format(dkpGoal);
-  var deadRequirementFormatted = new Intl.NumberFormat('en-US').format(deadRequirement);
+  // Format numbers using US style without replacing commas
+  var dkpGoalFormatted = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(dkpGoal);
+  var deadRequirementFormatted = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(deadRequirement);
 
   // Display main results in the description field only
   document.querySelector('.description').style.display = 'block';
@@ -267,11 +266,9 @@ function calculateRequirement() {
 
 function updateChart(dkpGoal, deadRequirement) {
   const ctx = document.getElementById('resultChart').getContext('2d');
-  
   if (chart) {
     chart.destroy();
   }
-  
   chart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -311,7 +308,7 @@ function updateChart(dkpGoal, deadRequirement) {
                 label += ': ';
               }
               if (context.parsed.y !== null) {
-                label += new Intl.NumberFormat('en-US').format(parseFloat(context.parsed.y.toFixed(0))) + ' Points';
+                label += new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(parseFloat(context.parsed.y.toFixed(0))) + ' Points';
               }
               return label;
             }
