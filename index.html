@@ -191,7 +191,7 @@ function calculateRequirement() {
   }
   
   let dkpGoal, deadRequirement, category;
-  if (power >= 20000000 && power <= 29999999) {
+  if (power >= 15000000 && power <= 29999999) {
     dkpGoal = power * 0.10;
     deadRequirement = power * 0.018;
     category = "10% DKP and 1.8% Dead Requirement category";
@@ -201,19 +201,19 @@ function calculateRequirement() {
     category = "12% DKP and 1.8% Dead Requirement category";
   } else if (power >= 40000000 && power <= 49999999) {
     dkpGoal = power * 0.15;
-    deadRequirement = power * 0.018;
+    deadRequirement = power * 0.016;
     category = "15% DKP and 1.8% Dead Requirement category";
   } else if (power >= 50000000 && power <= 59999999) {
     dkpGoal = power * 0.20;
-    deadRequirement = power * 0.012;
+    deadRequirement = power * 0.016;
     category = "20% DKP and 1.2% Dead Requirement category";
   } else if (power >= 60000000 && power <= 69999999) {
     dkpGoal = power * 0.20;
-    deadRequirement = power * 0.012;
+    deadRequirement = power * 0.016;
     category = "20% DKP and 1.2% Dead Requirement category";
   } else if (power >= 70000000 && power <= 79999999) {
     dkpGoal = power * 0.25;
-    deadRequirement = power * 0.012;
+    deadRequirement = power * 0.013;
     category = "25% DKP and 1.2% Dead Requirement category";
   } else if (power >= 80000000 && power <= 89999999) {
     dkpGoal = power * 0.25;
